@@ -56,10 +56,20 @@ def main():
     # reached AP?
     if fired == False:
       found = True
-      print (I_e_cur)
+    else:
+      # reduce Ie
+      I_e_cur = I_e_cur - 0.0001
 
-    # reduce Ie
-    I_e_cur = I_e_cur - 0.0001
+  # minimum value
+  print (I_e_cur)
+
+  # simulate for 1s just under this value
+  I_e = I_e_cur - 0.1
+  T = 0
+  while T < 1000:
+    V, fired = n1.excite(t_m, E_L, V_reset, V_th, R_m, I_e, dT)
+    # print ("(" + str(T) + "," + str(V) + ")")
+    T = T + dT
 
 if __name__ == "__main__":
     main()
