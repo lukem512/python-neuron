@@ -2,6 +2,8 @@
 # An Integrate and Fire model of a neuron
 # Luke Mitchell, 2014
 
+import numpy as np
+
 class neuron:
   # ctor
   def __init__(self, V):
@@ -61,7 +63,7 @@ def main():
       I_e_cur = I_e_cur - 0.0001
 
   # minimum value
-  print (I_e_cur)
+  print ("Action Potentials will occur when Ie > " + str(I_e_cur))
 
   # simulate for 1s just under this value
   I_e = I_e_cur - 0.1
@@ -70,6 +72,19 @@ def main():
     V, fired = n1.excite(t_m, E_L, V_reset, V_th, R_m, I_e, dT)
     # print ("(" + str(T) + "," + str(V) + ")")
     T = T + dT
+
+  ### Part 3 ###
+  # simulate for different current values
+  # determine the firing rate
+  for I_e in np.arange(2.0, 5.1, 0.1):
+    T = 0
+    ap_count = 0
+    while T < 1000:
+      V, fired = n1.excite(t_m, E_L, V_reset, V_th, R_m, I_e, dT)
+      if fired == True:
+        ap_count = ap_count + 1
+      T = T + dT
+    print ("(" + str(I_e) + "," + str(ap_count) + ")")
 
 if __name__ == "__main__":
     main()
