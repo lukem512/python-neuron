@@ -1,4 +1,6 @@
 #!/bin/python
+# An Integrate and Fire model of a neuron
+# Luke Mitchell, 2014
 
 class neuron:
   # ctor
@@ -10,11 +12,13 @@ class neuron:
     dV =  dT * (1/t_m * (E_L - self.V + (R_m * I_e)))
     self.V = self.V + dV
 
-    # if V > V_th then V = V_reset
+    # reached action potential?
+    fired = False
     if self.V > V_th:
+      fired = True
       self.V = V_reset
 
-    return self.V
+    return self.V, fired
        
 
 def main():
@@ -26,15 +30,36 @@ def main():
   I_e = 3.1        # nA
   dT = 1.0         # ms
   
-  ### Part 1 ###
+  # instantiate a neuron
   n1 = neuron(V_reset)
 
+  ### Part 1 ###
   # simulate for 1s
   T = 0
   while T < 1000:
-    print n1.excite(t_m, E_L, V_reset, V_th, R_m, I_e, dT)
+    V, fired = n1.excite(t_m, E_L, V_reset, V_th, R_m, I_e, dT)
+    # print ("(" + str(T) + "," + str(V) + ")")
     T = T + dT
-  
+
+  ### Part 2 ###
+  # determine the minimum Ie required to reach AP
+  I_e_cur = I_e
+  found = False
+  while I_e_cur > 0 and found == False:
+    # simulate for 1s
+    T = 0
+    fired = False
+    while T < 1000 and fired == False:
+      V, fired = n1.excite(t_m, E_L, V_reset, V_th, R_m, I_e_cur, dT)
+      T = T + dT
+
+    # reached AP?
+    if fired == False:
+      found = True
+      print (I_e_cur)
+
+    # reduce Ie
+    I_e_cur = I_e_cur - 0.0001
 
 if __name__ == "__main__":
     main()
