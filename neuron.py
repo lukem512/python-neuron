@@ -3,6 +3,7 @@
 # Luke Mitchell, 2014
 
 import numpy as np
+import matplotlib.pyplot as plt
 import random
 import math
 
@@ -134,7 +135,6 @@ class synapse:
 ###                      ###
 ############################
 
-
 def main():
   t_m = 10.0       # ms
   E_L = -70.0      # mV
@@ -154,11 +154,17 @@ def main():
   # simulate for 1s
   print ("Part 1.")
 
+  times = []
+  voltages = []
+
   T = 0
   while T < 1000:
     V, fired = n1.excite(dT)
-    print ("(" + str(T) + "," + str(V) + ")")
+    times.append(T)
+    voltages.append(V)
     T = T + dT
+  plt.plot(times, voltages, 'b')
+  plt.show()
 
   ### Part 2 ###
   # determine the minimum Ie required to reach AP
@@ -180,7 +186,7 @@ def main():
       V, fired = n2.excite(dT)
       T = T + dT
 
-  # reached AP?
+    # reached AP?
     if fired == False:
       found = True
     else:
@@ -196,13 +202,15 @@ def main():
   T = 0
   while T < 1000:
     V, fired = n3.excite(dT)
-    #print ("(" + str(T) + "," + str(V) + ")")
     T = T + dT
 
   ### Part 3 ###
   # simulate for different current values
   # determine the firing rate
   print ("Part 3.")
+
+  currents = []
+  firing_rates = []
 
   for I_e in np.arange(2.0, 5.1, 0.1):
     n4 = neuron(V_reset, t_m, E_L, V_reset, V_th, R_m, I_e)
@@ -213,7 +221,10 @@ def main():
       if fired == True:
         ap_count = ap_count + 1
       T = T + dT
-    print ("(" + str(I_e) + "," + str(ap_count) + ")")
+    currents.append(I_e)
+    firing_rates.append(ap_count)
+  plt.plot(currents, firing_rates, 'b')
+  plt.show()
 
   ### Part 4 ###
   # simulate two neurons, connected by a synapse
@@ -237,15 +248,21 @@ def main():
   
   # simulate for 1s
   # simulate the two neurons with a synapse
+  times = []
+  voltages_a = []
+  voltages_b = []
+
   T = 0
   while T < 1000:
+    times.append(T)
     V, fired = n5.synaptic_excite(dT)
-    if fired == True:
-      print ("n5 fired at " + str(T))
+    voltages_a.append(V)
     V, fired = n6.synaptic_excite(dT)
-    if fired == True:
-      print ("n6 fired at " + str(T))
+    voltages_b.append(V)
     T = T + dT
+  plt.plot(times, voltages_a, 'b')
+  plt.plot(times, voltages_b, 'r')
+  plt.show()
   
   # b) inhibitory
   print ("Part 4. (b)")
@@ -264,15 +281,21 @@ def main():
   
   # simulate for 1s
   # simulate the two neurons with a synapse
+  times = []
+  voltages_a = []
+  voltages_b = []
+
   T = 0
   while T < 1000:
+    times.append(T)
     V, fired = n7.synaptic_excite(dT)
-    if fired == True:
-      print ("n7 fired at " + str(T))
+    voltages_a.append(V)
     V, fired = n8.synaptic_excite(dT)
-    if fired == True:
-      print ("n8 fired at " + str(T))
+    voltages_b.append(V)
     T = T + dT
+  plt.plot(times, voltages_a, 'b')
+  plt.plot(times, voltages_b, 'r')
+  plt.show()
 
 if __name__ == "__main__":
     main()
