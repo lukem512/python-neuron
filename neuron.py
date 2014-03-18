@@ -163,6 +163,10 @@ def main():
     times.append(T)
     voltages.append(V)
     T = T + dT
+  plt.figure(1)
+  plt.xlabel('Time (mS)')
+  plt.ylabel('Voltage (mV)')
+  plt.title('Integrate and Fire Simulation')
   plt.plot(times, voltages, 'b')
   plt.show()
 
@@ -223,6 +227,10 @@ def main():
       T = T + dT
     currents.append(I_e)
     firing_rates.append(ap_count)
+  plt.figure(2)
+  plt.xlabel('Current (nA)')
+  plt.ylabel('Firing Rate (Hz)')
+  plt.title('Comparison of Neuron Firing Rates for Varying Current')
   plt.plot(currents, firing_rates, 'b')
   plt.show()
 
@@ -260,6 +268,10 @@ def main():
     V, fired = n6.synaptic_excite(dT)
     voltages_b.append(V)
     T = T + dT
+  plt.figure(3)
+  plt.xlabel('Time (mS)')
+  plt.ylabel('Voltage (mV)')
+  plt.title('Excitatory synapse')
   plt.plot(times, voltages_a, 'b')
   plt.plot(times, voltages_b, 'r')
   plt.show()
@@ -293,6 +305,10 @@ def main():
     V, fired = n8.synaptic_excite(dT)
     voltages_b.append(V)
     T = T + dT
+  plt.figure(4)
+  plt.xlabel('Time (mS)')
+  plt.ylabel('Voltage (mV)')
+  plt.title('Inhibatory synapse')
   plt.plot(times, voltages_a, 'b')
   plt.plot(times, voltages_b, 'r')
   plt.show()
