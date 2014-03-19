@@ -3,7 +3,7 @@
 # Luke Mitchell, 2014
 
 import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib.pyplot import *
 import random
 import math
 
@@ -164,12 +164,12 @@ def main():
     voltages.append(V)
     T = T + dT
     
-  plt.figure(1)
-  plt.xlabel('Time (mS)')
-  plt.ylabel('Voltage (mV)')
-  plt.title('Integrate and Fire Simulation of a Single Neuron')
-  plt.plot(times, voltages, 'b')
-  plt.show()
+  figure(1)
+  xlabel('Time (mS)')
+  ylabel('Voltage (mV)')
+  title('Integrate and Fire Simulation of a Single Neuron')
+  plot(times, voltages, 'b')
+  show()
 
   ### Part 2 ###
   # determine the minimum Ie required to reach AP
@@ -215,12 +215,12 @@ def main():
     voltages.append(V)
     T = T + dT
     
-  plt.figure(2)
-  plt.xlabel('Time (mS)')
-  plt.ylabel('Voltage (mV)')
-  plt.title('Integrate and Fire Simulation of a Single Neuron with Injected Current 3.0 nA')
-  plt.plot(times, voltages, 'b')
-  plt.show()
+  figure(2)
+  xlabel('Time (mS)')
+  ylabel('Voltage (mV)')
+  title('Integrate and Fire Simulation of a Single Neuron with Injected Current 3.0 nA')
+  plot(times, voltages, 'b')
+  show()
 
   ### Part 3 ###
   # simulate for different current values
@@ -242,12 +242,12 @@ def main():
     currents.append(I_e)
     firing_rates.append(ap_count)
     
-  plt.figure(3)
-  plt.xlabel('Injected Current (nA)')
-  plt.ylabel('Firing Rate (Hz)')
-  plt.title('Comparison of Neuron Firing Rates for Varying Injected Currents')
-  plt.plot(currents, firing_rates, 'b')
-  plt.show()
+  figure(3)
+  xlabel('Injected Current (nA)')
+  ylabel('Firing Rate (Hz)')
+  title('Comparison of Neuron Firing Rates for Varying Injected Currents')
+  plot(currents, firing_rates, 'b')
+  show()
 
   ### Part 4 ###
   # simulate two neurons, connected by a synapse
@@ -291,13 +291,14 @@ def main():
     voltages_b.append(V)
     T = T + dT
     
-  plt.figure(4)
-  plt.xlabel('Time (mS)')
-  plt.ylabel('Voltage (mV)')
-  plt.title('Excitatory Synapse with Equilibrium Potential 0.0')
-  plt.plot(times, voltages_a, 'b')
-  plt.plot(times, voltages_b, 'r')
-  plt.show()
+  figure(4)
+  xlabel('Time (mS)')
+  ylabel('Voltage (mV)')
+  title('Excitatory Synapse with Equilibrium Potential 0.0')
+  p1 = plot(times, voltages_a, 'b')
+  p2 = plot(times, voltages_b, 'r')
+  legend([p2, p1], ["Neuron A", "Neuron B"])
+  show()
   
   # b) inhibitory
   print ("Part 4. (b)")
@@ -329,13 +330,14 @@ def main():
     voltages_b.append(V)
     T = T + dT
     
-  plt.figure(5)
-  plt.xlabel('Time (mS)')
-  plt.ylabel('Voltage (mV)')
-  plt.title('Excitatory Synapse with Equilibrium Potential -80.0')
-  plt.plot(times, voltages_a, 'b')
-  plt.plot(times, voltages_b, 'r')
-  plt.show()
+  figure(5)
+  xlabel('Time (mS)')
+  ylabel('Voltage (mV)')
+  title('Excitatory Synapse with Equilibrium Potential -80.0')
+  p1 = plot(times, voltages_a, 'b')
+  p2 = plot(times, voltages_b, 'r')
+  legend([p2, p1], ["Neuron A", "Neuron B"])
+  show()
 
 if __name__ == "__main__":
     main()
