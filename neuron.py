@@ -63,17 +63,17 @@ class neuron:
     return self.V, fired
 
   # excite the neuron
-  def synaptic_excite(self, dT):
+  def synaptic_excite(self, R_mI_e, dT):
     if self.incoming_synapse == None:
       print ("No incoming synapse found. Reverting to stand-alone excite")
       return self.excite(dT)
 
-    G_s = self.incoming_synapse.conductance()
+    R_mG_s = self.incoming_synapse.conductance()
     t_s = self.incoming_synapse.constant()
     E_s = self.incoming_synapse.equilib()
     P_s = self.incoming_synapse.prob()
 
-    dV = ((self.E_L - self.V - ((self.R_m * (P_s * G_s)) * (self.V - E_s)) + (self.R_m * self.I_e)) / t_s) * dT
+    dV = ((self.E_L - self.V - ((P_s * R_mG_s) * (self.V - E_s)) + (R_mI_e)) / self.t_m) * dT
     self.V = self.V + dV
 
     # reached action potential?
@@ -96,8 +96,8 @@ class neuron:
 
 class synapse:
   #ctor
-  def __init__(self, G_s, P_max, t_s, E_s):
-    self.G_s = G_s # conductance of synapse (synaptic weight)
+  def __init__(self, R_mG_s, P_max, t_s, E_s):
+    self.R_mG_s = R_mG_s # conductance of synapse (synaptic weight)
     self.P_max = P_max
     self.t_s = t_s
     self.E_s = E_s # equilibrium potential
@@ -109,7 +109,7 @@ class synapse:
     return self.P_max * math.exp(-1 * ((T - self.T_f) / self.t_s))
 
   def conductance(self):
-    return self.G_s
+    return self.R_mG_s
 
   def constant(self):
     return self.t_s
@@ -163,10 +163,11 @@ def main():
     times.append(T)
     voltages.append(V)
     T = T + dT
+    
   plt.figure(1)
   plt.xlabel('Time (mS)')
   plt.ylabel('Voltage (mV)')
-  plt.title('Integrate and Fire Simulation')
+  plt.title('Integrate and Fire Simulation of a Single Neuron')
   plt.plot(times, voltages, 'b')
   plt.show()
 
@@ -201,12 +202,25 @@ def main():
   print ("[Numerical] Action Potentials will occur when Ie > " + str(I_e_cur))
 
   # simulate for 1s just under this value
-  I_e = I_e_cur - 0.1
+  times = []
+  voltages = []
+  
+  I_e = I_e_cur
   n3 = neuron(V_reset, t_m, E_L, V_reset, V_th, R_m, I_e)
   T = 0
   while T < 1000:
     V, fired = n3.excite(dT)
     T = T + dT
+    times.append(T)
+    voltages.append(V)
+    T = T + dT
+    
+  plt.figure(2)
+  plt.xlabel('Time (mS)')
+  plt.ylabel('Voltage (mV)')
+  plt.title('Integrate and Fire Simulation of a Single Neuron with Injected Current 3.0 nA')
+  plt.plot(times, voltages, 'b')
+  plt.show()
 
   ### Part 3 ###
   # simulate for different current values
@@ -227,18 +241,26 @@ def main():
       T = T + dT
     currents.append(I_e)
     firing_rates.append(ap_count)
-  plt.figure(2)
-  plt.xlabel('Current (nA)')
+    
+  plt.figure(3)
+  plt.xlabel('Injected Current (nA)')
   plt.ylabel('Firing Rate (Hz)')
-  plt.title('Comparison of Neuron Firing Rates for Varying Current')
+  plt.title('Comparison of Neuron Firing Rates for Varying Injected Currents')
   plt.plot(currents, firing_rates, 'b')
   plt.show()
 
   ### Part 4 ###
   # simulate two neurons, connected by a synapse
-  G_s = 0.15 / R_m
+  t_m = 20.0       # ms
+  E_L = -70.0      # mV
+  V_reset = -80.0  # mV
+  V_th = -54.0     # mV
+  dT = 1.0         # ms  
+
+  R_mG_s = 0.15
+  R_mI_e = 18.0 #mV
   P_max = 0.5
-  t_s = 10 # ms
+  t_s = 10.0
 
   # a) excitatory
   print ("Part 4. (a)")
@@ -249,9 +271,9 @@ def main():
   n5 = neuron(V5, t_m, E_L, V_reset, V_th, R_m, I_e)
   n6 = neuron(V6, t_m, E_L, V_reset, V_th, R_m, I_e)
 
-  s1 = synapse(G_s, P_max, t_s, E_s)
+  s1 = synapse(R_mG_s, P_max, t_s, E_s)
   s1.connect(n5, n6)
-  s2 = synapse(G_s, P_max, t_s, E_s)
+  s2 = synapse(R_mG_s, P_max, t_s, E_s)
   s2.connect(n6, n5)
   
   # simulate for 1s
@@ -263,15 +285,16 @@ def main():
   T = 0
   while T < 1000:
     times.append(T)
-    V, fired = n5.synaptic_excite(dT)
+    V, fired = n5.synaptic_excite(R_mI_e, dT)
     voltages_a.append(V)
-    V, fired = n6.synaptic_excite(dT)
+    V, fired = n6.synaptic_excite(R_mI_e, dT)
     voltages_b.append(V)
     T = T + dT
-  plt.figure(3)
+    
+  plt.figure(4)
   plt.xlabel('Time (mS)')
   plt.ylabel('Voltage (mV)')
-  plt.title('Excitatory synapse')
+  plt.title('Excitatory Synapse with Equilibrium Potential 0.0')
   plt.plot(times, voltages_a, 'b')
   plt.plot(times, voltages_b, 'r')
   plt.show()
@@ -286,9 +309,9 @@ def main():
   n7 = neuron(V5, t_m, E_L, V_reset, V_th, R_m, I_e)
   n8 = neuron(V6, t_m, E_L, V_reset, V_th, R_m, I_e)
 
-  s3 = synapse(G_s, P_max, t_s, E_s)
+  s3 = synapse(R_mG_s, P_max, t_s, E_s)
   s3.connect(n7, n8)
-  s4 = synapse(G_s, P_max, t_s, E_s)
+  s4 = synapse(R_mG_s, P_max, t_s, E_s)
   s4.connect(n8, n7)
   
   # simulate for 1s
@@ -300,15 +323,16 @@ def main():
   T = 0
   while T < 1000:
     times.append(T)
-    V, fired = n7.synaptic_excite(dT)
+    V, fired = n7.synaptic_excite(R_mI_e, dT)
     voltages_a.append(V)
-    V, fired = n8.synaptic_excite(dT)
+    V, fired = n8.synaptic_excite(R_mI_e, dT)
     voltages_b.append(V)
     T = T + dT
-  plt.figure(4)
+    
+  plt.figure(5)
   plt.xlabel('Time (mS)')
   plt.ylabel('Voltage (mV)')
-  plt.title('Inhibatory synapse')
+  plt.title('Excitatory Synapse with Equilibrium Potential -80.0')
   plt.plot(times, voltages_a, 'b')
   plt.plot(times, voltages_b, 'r')
   plt.show()
